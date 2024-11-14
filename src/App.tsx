@@ -1,6 +1,7 @@
-import { Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
+import AddNewContact from "./container/AddNewContact/AddNewContact";
 
 const App = () => {
   return (
@@ -9,7 +10,7 @@ const App = () => {
         <Navbar />
       </header>
       <Routes>
-        
+        <Route path="/add-new-contact" element={<AddNewContact />} />
       </Routes>
     </>
   );
