@@ -1,53 +1,44 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchTvShows, fetchShowDetailsLoading } from "../thunks/thunk";
-import { IChannel, IChannelApi } from "../../types";
-import { RootState } from "../../app/store";
+import { createContact } from "./thunk";
+import { RootState } from "./app/store";
+import { IContact } from "./types";
 
 export interface SearchTvShowState {
-  shows: IChannel[];
-  showDisplay: IChannelApi | null;
+  shows: IContact[];
+  showDisplay: IContact | null;
   fetchLoading: boolean;
+  isCreateLoading: boolean;
 }
 
 const initialState: SearchTvShowState = {
   shows: [],
   showDisplay: null,
   fetchLoading: false,
+  isCreateLoading: false,
 };
 
-export const tvShowSlice = createSlice({
-  name: "TvShows",
+export const selectCreateContactLoading = (state: RootState) =>
+  state.contact.isCreateLoading;
+
+export const contactSlice = createSlice({
+  name: "contact",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTvShows.pending, (state) => {
-        state.fetchLoading = true;
+      .addCase(createContact.pending, (state) => {
+        state.isCreateLoading = true;
       })
-      .addCase(fetchTvShows.fulfilled, (state, { payload: shows }) => {
-        state.fetchLoading = false;
-        state.shows = shows;
+      .addCase(createContact.fulfilled, (state) => {
+        state.isCreateLoading = false;
       })
-      .addCase(fetchTvShows.rejected, (state) => {
-        state.fetchLoading = false;
-      })
-      .addCase(fetchShowDetailsLoading.pending, (state) => {
-        state.fetchLoading = true;
-      })
-      .addCase(
-        fetchShowDetailsLoading.fulfilled,
-        (state, { payload: showDisplay }) => {
-          state.fetchLoading = false;
-          state.showDisplay = showDisplay;
-        }
-      )
-      .addCase(fetchShowDetailsLoading.rejected, (state) => {
-        state.fetchLoading = false;
+      .addCase(createContact.rejected, (state) => {
+        state.isCreateLoading = false;
       });
   },
 });
 
-export const channelReducer = tvShowSlice.reducer;
+export const contactReducer = contactSlice.reducer;
 export const selectAutocomplete = (state: RootState) =>
-  state.channel.showDisplay;
-export const SearchShows = (state: RootState) => state.channel.shows;
+  state.contact.showDisplay;
+export const SearchShows = (state: RootState) => state.contact.shows;

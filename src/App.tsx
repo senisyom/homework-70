@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
-import AddNewContact from "./container/AddNewContact/AddNewContact";
+import AddNewContact from "./container/NewContact/NewContact";
 
 const App = () => {
   return (
