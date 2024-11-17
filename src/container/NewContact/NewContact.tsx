@@ -3,10 +3,12 @@ import { NavLink } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import { createContact } from "../../thunk";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 const NewContact = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate()
 
   const [contact, setContact] = useState({
     name: "",
@@ -15,7 +17,7 @@ const NewContact = () => {
     picture: "",
   });
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target as HTMLInputElement;
     setContact((prevContact) => ({
       ...prevContact,
@@ -33,16 +35,18 @@ const NewContact = () => {
 
     try {
       await dispatch(createContact(newContact));
-      toast.success("Контакт успешно добавлен");
+      toast.success("Контакт добавлен");
 
       setContact({
         name: "",
         number: "",
         email: "",
         picture: "",
+        
       });
+      navigate('/')
     } catch {
-      toast.error("Ошибка при добавлении контакта");
+      toast.error("Ошибка");
     }
   };
 
@@ -58,7 +62,7 @@ const NewContact = () => {
               placeholder="Имя"
               name="name"
               value={contact.name}
-              onChange={handleChange}
+              onChange={onChange}
               required
             />
             <label>Имя</label>
@@ -70,7 +74,7 @@ const NewContact = () => {
               placeholder="Телефон"
               name="number"
               value={contact.number}
-              onChange={handleChange}
+              onChange={onChange}
               required
             />
             <label>Телефон</label>
@@ -80,7 +84,7 @@ const NewContact = () => {
               type="text"
               className="form-control"
               value={contact.email}
-              onChange={handleChange}
+              onChange={onChange}
               placeholder="Почта"
               name="email"
             />
@@ -93,7 +97,7 @@ const NewContact = () => {
               placeholder="Фото (ссылка)"
               name="picture"
               value={contact.picture}
-              onChange={handleChange}
+              onChange={onChange}
             />
             <label>Фото</label>
           </div>
