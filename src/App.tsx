@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar/Navbar";
 import AddNewContact from "./container/NewContact/NewContact";
 import ContactList from "./container/ContactsList/ContactList";
 
+
 const App = () => {
   return (
     <>
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<ContactList />} />
           <Route path="/add-new-contact" element={<AddNewContact />} />
+          <Route path="/add-new-contact/:id" element={<AddNewContact />} />
         </Routes>
       </main>
     </>

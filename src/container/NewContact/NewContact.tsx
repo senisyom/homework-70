@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import { createContact } from "../../thunk";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
+import { selectContacts } from "../../slice";
+import { useEffect } from "react";
 
 const NewContact = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const contacts = useSelector(selectContacts)
 
   const [contact, setContact] = useState({
     name: "",
@@ -16,6 +21,15 @@ const NewContact = () => {
     email: "",
     picture: "",
   });
+
+   useEffect(() => {
+     if (id) {
+       const contactToEdit = contacts.find((contact) => contact.id === id);
+       if (contactToEdit) {
+         setContact(contactToEdit);
+       }
+     }
+   }, [id, contacts]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target as HTMLInputElement;
@@ -25,7 +39,7 @@ const NewContact = () => {
     }));
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const newContact = {
@@ -35,16 +49,15 @@ const NewContact = () => {
 
     try {
       await dispatch(createContact(newContact));
-      toast.success("Контакт добавлен");
+      toast.success("Добавлено");
 
       setContact({
         name: "",
         number: "",
         email: "",
         picture: "",
-        
       });
-      navigate('/')
+      navigate("/");
     } catch {
       toast.error("Ошибка");
     }
@@ -53,8 +66,10 @@ const NewContact = () => {
   return (
     <div>
       <div className="container w-50 mx-auto mt-4">
-        <h2 className="mb-4">Добавить новый контакт</h2>
-        <form onSubmit={handleSubmit}>
+        <h2 className="mb-4">
+          {id ? "Редактировать контакт" : "Добавить новый контакт"}
+        </h2>
+        <form onSubmit={onSubmit}>
           <div className="form-floating mb-4">
             <input
               type="text"
@@ -94,7 +109,7 @@ const NewContact = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Фото (ссылка)"
+              placeholder=""
               name="picture"
               value={contact.picture}
               onChange={onChange}
@@ -102,7 +117,7 @@ const NewContact = () => {
             <label>Фото</label>
           </div>
           <button type="submit" className="btn btn-primary">
-            Сохранить
+            {id ? "Сохранить изменения" : "Сохранить"}
           </button>
           <NavLink to="/">
             <button type="button" className="btn btn-primary ms-3">

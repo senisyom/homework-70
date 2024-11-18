@@ -1,32 +1,47 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { getContact } from "../../thunk";
+import { getContact, deleteContact } from "../../thunk";
 import { selectContacts, selectFetchLoading } from "../../slice";
 import Modal from "../../components/Modal/Modal";
 import { IContact } from "../../types";
+import { toast } from "react-toastify";
 
 const ContactList = () => {
   const dispatch = useAppDispatch();
   const contacts = useAppSelector(selectContacts);
   const loading = useAppSelector(selectFetchLoading);
 
-
   const [selectedContact, setSelectedContact] = useState<IContact | null>(null);
 
   useEffect(() => {
-    dispatch(getContact());
-  }, [dispatch]);
+    if (contacts.length === 0) {
+      dispatch(getContact());
+    }
+  }, [contacts.length, dispatch]);
+
 
   if (loading) {
-    return <p>Загрузка...</p>;
+    return <p>Загрузка</p>;
   }
 
-  const handleOpenModal = (contact: IContact) => {
+  const onOpenModal = (contact: IContact) => {
     setSelectedContact(contact);
   };
 
   const handleCloseModal = () => {
     setSelectedContact(null);
+  };
+
+  const onDeleteContact = (id: string) => {
+    dispatch(deleteContact(id))
+      .then(() => {
+
+        setSelectedContact(null);
+      })
+      .catch((error) => {
+        console.error("Ошибка удаления:", error);
+        toast.error("Ошибка удаления.");
+      });
   };
 
   return (
@@ -38,20 +53,28 @@ const ContactList = () => {
           {contacts.map((contact) => (
             <div className="card m-4" key={contact.id}>
               <div className="card-body">
-                <h5 className="card-title m-3">Контакт: {contact.name}</h5>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleOpenModal(contact)}
-                >
-                  Информация
-                </button>
+                <a href="">
+                  <h5
+                    className="card-title m-3"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onOpenModal(contact);
+                    }}
+                  >
+                    Контакт: {contact.name}
+                  </h5>
+                </a>
               </div>
             </div>
           ))}
         </>
       )}
 
-      <Modal contact={selectedContact} onClose={handleCloseModal} />
+      <Modal
+        contact={selectedContact}
+        onClose={handleCloseModal}
+        onDelete={onDeleteContact}
+      />
     </>
   );
 };

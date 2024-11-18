@@ -1,17 +1,35 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-interface Props {
+interface ModalProps {
   contact: {
+    id: string;
     name: string;
     number: string;
     email: string;
     picture: string;
   } | null;
   onClose: () => void;
+  onDelete?: (id: string) => void;
 }
 
-const Modal: React.FC<Props> = ({ contact, onClose }) => {
+const Modal: React.FC<ModalProps> = ({ contact, onClose, onDelete }) => {
+  const navigate = useNavigate();
   if (!contact) return null;
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(contact.id);
+    } else {
+      toast.error('Error to delete');
+    }
+  };
+
+  const toEdit = () => {
+    navigate(`/add-new-contact/${contact.id}`);
+  };
 
   return (
     <div
@@ -44,8 +62,12 @@ const Modal: React.FC<Props> = ({ contact, onClose }) => {
             </p>
           </div>
           <div className="modal-footer">
-            <button className="btn btn-warning">Редактировать</button>
-            <button className="btn btn-danger">Удалить</button>
+            <button className="btn btn-warning" onClick={toEdit}>
+              Редактировать
+            </button>
+            <button className="btn btn-danger" onClick={handleDelete}>
+              Удалить
+            </button>
           </div>
         </div>
       </div>
